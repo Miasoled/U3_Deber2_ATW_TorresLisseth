@@ -1,0 +1,30 @@
+# --- Archivos de sistema ---
+.DS_Store
+Thumbs.db
+
+# --- Configuración local ---
+.env
+*.local
+
+# --- Logs ---
+*.log
+logs/
+tmp/
+
+# --- Composer (si llegas a usarlo) ---
+vendor/
+composer.lock
+
+# --- Docker ---
+# Evita subir volúmenes o datos persistentes
+data/
+mysql/
+phpmyadmin/
+docker/postgres_data/
+
+# --- IDEs ---
+.vscode/
+.idea/
+
+# --- Cachés ---
+.cache/

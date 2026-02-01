@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualización de Arquitectura MVC con Front Controller</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <style>
+        :root {
+            --bg-color: #f8f9fa;
+            --box-bg: #ffffff;
+            --box-border: #dee2e6;
+            --text-color: #212529;
+            --title-color: #0d6efd;
+            --active-border: #0d6efd;
+            --active-bg: #e9f2ff;
+            --arrow-color: #6c757d;
+            --arrow-active-color: #0d6efd;
+            --code-font: 'SFMono-Regular', Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+            --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            padding: 24px;
+            min-height: 100vh;
+        }
+
+        h1 {
+            color: var(--title-color);
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        #controls {
+            margin-bottom: 24px;
+            display: flex;
+            gap: 12px;
+        }
+
+        button {
+            background-color: var(--title-color);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        
+        button#resetBtn {
+            background-color: #6c757d;
+        }
+        
+        button#resetBtn:hover {
+            background-color: #5a6268;
+        }
+
+        #diagram-container {
+            width: 100%;
+            max-width: 1400px;
+            min-height: 650px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: var(--box-bg);
+            border-radius: 16px;
+            border: 1px solid var(--box-border);
+            padding: 20px;
+            box-shadow: var(--box-shadow);
+        }
+
+        .mermaid {
+            width: 100%;
+            height: 100%;
+            text-align: center;
+        }
+        
+        .node > rect, .node > circle, .node > polygon {
+            stroke-width: 2px !important;
+            stroke: var(--arrow-color) !important;
+            fill: var(--box-bg) !important;
+        }
+        
+        .node.active-node > rect, .node.active-node > circle, .node.active-node > polygon {
+            fill: var(--active-bg) !important;
+            stroke: var(--active-border) !important;
+            stroke-width: 3px !important;
+        }
+
+        .edgePath .path {
+            stroke-width: 1.5px !important;
+             stroke: var(--arrow-color) !important;
+        }
+        .edgePath.active-edge .path {
+            stroke: var(--arrow-active-color) !important;
+            stroke-width: 2.5px !important;
+        }
+        @keyframes flow {
+            to {
+                stroke-dashoffset: -100;
+            }
+        }
+
+        .edgePath.active-edge .path {
+            stroke: var(--arrow-active-color) !important;
+            stroke-width: 2.5px !important;
+            stroke-dasharray: 10 5; /* Make the dashed line visible */
+            animation: flow 2s linear infinite; /* Apply the animation */
+        }
+        .edgePath.active-edge .marker {
+            fill: var(--arrow-active-color) !important;
+            stroke: var(--arrow-active-color) !important;
+        }
+
+        #explanation {
+            margin-top: 24px;
+            width: 100%;
+            max-width: 1350px;
+            padding: 24px;
+            background: var(--box-bg);
+            border-left: 6px solid var(--box-border);
+            border-radius: 8px;
+            min-height: 90px;
+            box-shadow: var(--box-shadow);
+            transition: border-left-color 0.4s ease;
+            box-sizing: border-box;
+        }
+        #explanation.active {
+             border-left-color: var(--active-border);
+        }
+        #explanation p {
+            margin: 0;
+            font-size: 1.05rem;
+            line-height: 1.6;
+        }
+         #explanation code {
+            font-family: var(--code-font);
+            background-color: #e9ecef;
+            padding: 3px 6px;
+            border-radius: 4px;
+            color: #d63384;
+        }
+    </style>
+</head>
+<body>
+    <h1>Flujo de una Petición en la Arquitectura del Proyecto</h1>
+    <div id="controls">
+        <button id="startBtn">▶ Iniciar Animación</button>
+        <button id="resetBtn">↻ Reiniciar</button>
+    </div>
+
+    <div id="diagram-container">
+        <div class="mermaid">
+            graph LR
+                browser("Navegador<br/><i>Usuario</i>") -- Petición HTTP --> frontController("Front Controller<br/><i>public/index.php</i>")
+                frontController -- Procesa Petición --> router{"Router<br/><i>routes/web.php</i>"}
+                router -- Mapea a --> controller("Controlador<br/><i>app/controller/*.php</i>")
+                
+                controller -- (Opcional) Consulta --> dbConnection[("Conexión DB<br/><i>framework/Database.php</i>")]
+                dbConnection -- Devuelve Datos --> controller
+                
+                controller -- Pasa Datos a --> template("Template Principal<br/><i>resources/*.template.php</i>")
+                template -- Incluye --> partials("Vistas Parciales<br/><i>resources/partials/*.php</i>")
+                partials -- Contenido Renderizado --> template
+                
+                template -- Genera HTML --> finalResponse("Respuesta HTML<br/><i>Página Renderizada</i>")
+                finalResponse -- Envía a --> browser
+                
+                dbConnection -.-> dbOptions(Entorno de Desarrollo<br>Local o Docker)
+
+                classDef defaultNode fill:'#fff',stroke:'#6c757d',stroke-width:2px;
+                class browser,frontController,router,controller,template,dbConnection,partials,finalResponse defaultNode;
+                classDef dbOptionsNode fill:'#fff',stroke:'#6c757d',stroke-width:2px,stroke-dasharray:5 5
+                class dbOptions dbOptionsNode;
+        </div>
+    </div>
+
+    <div id="explanation">
+        <p>Haz clic en "Iniciar Animación" para ver el flujo del proceso paso a paso.</p>
+    </div>
+
+    <script>
+        mermaid.initialize({
+            startOnLoad: true, // Let Mermaid render automatically
+            theme: 'base',
+            fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+            flowchart: {
+                nodeSpacing: 60,
+                rankSpacing: 60
+            },
+            fontSize: '17px'
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const startBtn = document.getElementById('startBtn');
+            const resetBtn = document.getElementById('resetBtn');
+            const explanation = document.getElementById('explanation');
+            
+            let currentStep = 0;
+            let animationTimer;
+
+            const steps = [
+                { nodeId: 'browser', edgeIds: ['browser', 'frontController'], text: "<b>Paso 1: Petición HTTP.</b> El navegador del usuario envía una petición (ej. GET /posts) al servidor." },
+                { nodeId: 'frontController', edgeIds: ['frontController', 'router'], text: "<b>Paso 2: Front Controller (public/index.php).</b> Todas las peticiones entrantes son capturadas por el Front Controller." },
+                { nodeId: 'router', edgeIds: ['router', 'controller'], text: "<b>Paso 3: Router (routes/web.php).</b> El Router interpreta la URL de la petición y la mapea al Controlador y método adecuados." },
+                { nodeId: 'controller', text: "<b>Paso 4: Controlador (app/controller/*.php).</b> El Controlador ejecuta la lógica de negocio necesaria para la petición." },
+                { nodeId: 'dbConnection', edgeIds: ['controller', 'dbConnection'], text: "<b>Paso 5 (Opcional): Conexión a la Base de Datos (framework/Database.php).</b> Si la petición requiere datos, el Controlador interactúa con la base de datos a través de `Database.php`." },
+                { nodeId: 'dbOptions', edgeIds: ['dbConnection', 'dbOptions'], text: "<b>Nota: Entorno de Base de Datos.</b> La conexión puede ser a un entorno local o un contenedor Docker, según la configuración." },
+                { nodeId: 'controller', edgeIds: ['dbConnection', 'controller'], text: "<b>Paso 6: Datos Devueltos al Controlador.</b> La base de datos devuelve los datos solicitados al Controlador." },
+                { nodeId: 'template', edgeIds: ['controller', 'template'], text: "<b>Paso 7: Carga de la Plantilla Principal (resources/*.template.php).</b> El Controlador pasa los datos relevantes a la plantilla principal para generar la vista." },
+                { nodeId: 'partials', edgeIds: ['template', 'partials'], text: "<b>Paso 8: Inclusión de Vistas Parciales (resources/partials/*.php).</b> La plantilla principal incluye componentes reutilizables como cabeceras y pies de página." },
+                { nodeId: 'template', edgeIds: ['partials', 'template'], text: "<b>Paso 9: Contenido Renderizado en Plantilla.</b> Las vistas parciales se renderizan dentro de la plantilla principal." },
+                { nodeId: 'finalResponse', edgeIds: ['template', 'finalResponse'], text: "<b>Paso 10: Generación de Respuesta HTML.</b> La plantilla principal, con los datos y parciales, genera el HTML final de la página." },
+                { nodeId: 'browser', edgeIds: ['finalResponse', 'browser'], text: "<b>Paso 11: Envío de Respuesta al Navegador.</b> El Front Controller envía la Respuesta HTML final de vuelta al navegador del usuario." },
+            ];
+
+            function clearAllHighlights() {
+                document.querySelectorAll('.mermaid .node').forEach(el => el.classList.remove('active-node'));
+                document.querySelectorAll('.mermaid .edgePath').forEach(el => el.classList.remove('active-edge'));
+                explanation.classList.remove('active');
+            }
+
+            function resetAnimation() {
+                clearTimeout(animationTimer);
+                clearAllHighlights();
+                explanation.innerHTML = '<p>Haz clic en "Iniciar Animación" para ver el flujo del proceso paso a paso.</p>';
+                currentStep = 0;
+                startBtn.disabled = false;
+            }
+
+            function runStep() {
+                if (currentStep >= steps.length) {
+                    startBtn.disabled = false;
+                    return;
+                }
+                
+                clearAllHighlights();
+                
+                const step = steps[currentStep];
+                
+                const nodeEl = document.querySelector(`.mermaid .node[data-id="${step.nodeId}"]`);
+                if (nodeEl) nodeEl.classList.add('active-node');
+
+                if (step.edgeIds) {
+                    const [from, to] = step.edgeIds;
+                    const edgeEl = document.querySelector(`.mermaid .edgePath[data-from="${from}"][data-to="${to}"]`);
+                    if(edgeEl) edgeEl.classList.add('active-edge');
+                }
+                
+                explanation.classList.add('active');
+                explanation.innerHTML = `<p>${step.text}</p>`;
+
+                currentStep++;
+                animationTimer = setTimeout(runStep, 1500);
+            }
+
+            // --- ROBUST POLLING MECHANISM ---
+            function waitForDiagramAndAnimate(startTime = Date.now()) {
+                // Timeout after 5 seconds
+                if (Date.now() - startTime > 5000) {
+                    console.error("Mermaid diagram did not render within 5 seconds.");
+                    alert("Error: No se pudo cargar el diagrama para la animación.");
+                    startBtn.disabled = false;
+                    return;
+                }
+
+                // Check if a key element from the SVG exists in the DOM
+                const firstNode = document.querySelector('.mermaid .node[data-id="browser"]');
+
+                if (firstNode) {
+                    // DIAGRAM IS READY! Start the animation.
+                    runStep();
+                } else {
+                    // Diagram not ready, try again shortly.
+                    setTimeout(() => waitForDiagramAndAnimate(startTime), 50);
+                }
+            }
+
+            startBtn.addEventListener('click', () => {
+                resetAnimation();
+                startBtn.disabled = true;
+                // Use the robust polling function to start the animation
+                waitForDiagramAndAnimate();
+            });
+            
+            resetBtn.addEventListener('click', resetAnimation);
+        });
+    </script>
+</body>
+</html>
