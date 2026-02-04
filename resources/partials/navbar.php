@@ -5,7 +5,7 @@
             <a href="/about" class="<?= $_SERVER['REQUEST_URI'] === '/about' ?> text-gray-300 hover:bg-gray-700 hover:text-white rounded-md px-3 py-2 text-sm font-medium">Acerca de</a>
             <a href="/links" class="<?= $_SERVER['REQUEST_URI'] === '/links' ?> text-gray-300 hover:bg-gray-700 hover:text-white rounded-md px-3 py-2 text-sm font-medium">Proyectos</a>
             <a href="/post" class="<?= $_SERVER['REQUEST_URI'] === '/post' ?> text-gray-300 hover:bg-gray-700 hover:text-white rounded-md px-3 py-2 text-sm font-medium">Post</a>
-
+            <a href="/products" class="<?= strpos($_SERVER['REQUEST_URI'], '/products') === 0 ? 'bg-gray-900' : '' ?> text-white rounded-md px-3 py-2 text-sm font-medium hover:bg-gray-700">Productos</a>
         </div>
     </div>
 </nav>

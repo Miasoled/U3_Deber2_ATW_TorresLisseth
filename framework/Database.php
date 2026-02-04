@@ -8,7 +8,7 @@ class Database
     {
         $host = 'localhost'; 
         $port = '3306';
-        $dbname = 'web';
+        $dbname = 'lab1_ATW_TL';
         $user = 'root';
         $password = '';
 
@@ -38,5 +38,10 @@ class Database
             exit('404 Not Found');
         }
         return $result;
+    }
+
+    public function first()
+    {
+        return $this->statement->fetch(PDO::FETCH_ASSOC);
     }
 }
